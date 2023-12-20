@@ -1,8 +1,7 @@
 ---
 layout: home
+headertitle: Resume
 ---
-
-
 <center>
     <h1>黄鹏</h1>
     <div>
