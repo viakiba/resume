@@ -17,7 +17,7 @@
             font-family: "微软雅黑", sans-serif;
         }
         .container {
-            max-width: 600px;
+            max-width: 700px;
             margin: 30px auto;
             padding: 0 20px;
         }
@@ -44,7 +44,7 @@
             resize: vertical;
         }
         textarea {
-            height: 120px;
+            height: 150px;
         }
         button {
             background-color: #2563eb;
@@ -82,6 +82,20 @@
             font-size: 14px;
             color: #666;
             margin-top: 5px;
+        }
+        /* 分组数量输入项样式 */
+        .group-count-item {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .group-count-item label {
+            flex: 0 0 100px; /* 固定宽度，对齐标签 */
+            margin: 0;
+        }
+        .group-count-item input {
+            width: 80px;
         }
     
 
@@ -93,7 +107,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>菜单随机生成器</title>
+    <title>分组菜单随机生成器</title>
     <style>
         * {
             margin: 0;
@@ -102,7 +116,7 @@
             font-family: "微软雅黑", sans-serif;
         }
         .container {
-            max-width: 600px;
+            max-width: 700px;
             margin: 30px auto;
             padding: 0 20px;
         }
@@ -129,7 +143,7 @@
             resize: vertical;
         }
         textarea {
-            height: 120px;
+            height: 150px;
         }
         button {
             background-color: #2563eb;
@@ -168,101 +182,189 @@
             color: #666;
             margin-top: 5px;
         }
+        /* 分组数量输入项样式 */
+        .group-count-item {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .group-count-item label {
+            flex: 0 0 100px; /* 固定宽度，对齐标签 */
+            margin: 0;
+        }
+        .group-count-item input {
+            width: 80px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>菜单随机生成器</h1>
+        <h1>分组菜单随机生成器</h1>
 
-        <!-- 菜单输入区域 -->
+        <!-- 分组菜单输入区域 -->
         <div class="input-group">
-            <label for="menu-input">菜单列表（用逗号分隔）：</label>
-            <textarea id="menu-input" placeholder="例如：西红柿炒鸡蛋,拍黄瓜,鱼香肉丝"></textarea>
-            <div class="tip">提示：支持多行输入，自动过滤空项和空格</div>
+            <label for="menu-input">分组菜单（格式参考）：</label>
+            <textarea 
+                id="menu-input" 
+                placeholder="分组名1:菜品1,菜品2;分组名2:菜品3,菜品4（例：蔬菜:西红柿炒鸡蛋,拍黄瓜;肉类:红烧肉,宫保鸡丁）"
+            ></textarea>
+            <div class="tip">提示：用「;」分隔分组，「:」分隔分组名与菜品；自动过滤空项、重复项</div>
         </div>
-        <button id="import-btn">导入菜单</button>
+        <button id="import-btn">导入分组菜单</button>
 
-        <!-- 数量选择区域 -->
-        <div class="input-group" style="margin-top: 20px;">
-            <label for="count-input">生成数量：</label>
-            <input type="number" id="count-input" min="1" value="1" style="width: 100px;">
+        <!-- 动态分组数量输入区域 -->
+        <div id="group-counts" class="input-group" style="margin-top: 20px;">
+            <!-- 导入后自动生成每个分组的数量输入框 -->
         </div>
+
         <button id="generate-btn">生成随机菜单</button>
 
         <!-- 结果显示区域 -->
         <div class="result-box">
             <h2>随机结果：</h2>
-            <div id="result">请先导入菜单并生成</div>
+            <div id="result">请先导入分组菜单并设置数量</div>
         </div>
     </div>
 
     <script>
-        // 1. 页面加载时恢复本地存储的菜单
+        // 页面加载时恢复本地存储的分组数据
         document.addEventListener('DOMContentLoaded', () => {
-            const savedMenu = localStorage.getItem('menuList');
-            if (savedMenu) {
-                const menuArray = JSON.parse(savedMenu);
-                document.getElementById('menu-input').value = menuArray.join(', ');
+            const savedGroups = localStorage.getItem('groupMenuList');
+            if (savedGroups) {
+                const groupList = JSON.parse(savedGroups);
+                // 恢复输入框内容（转换为分组字符串）
+                const inputStr = groupList.map(g => `${g.groupName}:${g.dishes.join(',')}`).join(';');
+                document.getElementById('menu-input').value = inputStr;
+                // 渲染分组数量输入框
+                renderGroupCountInputs(groupList);
             }
         });
 
-        // 2. 导入菜单逻辑
+        // 1. 渲染分组数量输入框（根据导入的分组动态生成）
+        function renderGroupCountInputs(groupList) {
+            const container = document.getElementById('group-counts');
+            container.innerHTML = ''; // 清空原有内容
+            
+            groupList.forEach((group, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'group-count-item';
+
+                const label = document.createElement('label');
+                label.textContent = `${group.groupName}：`;
+                label.htmlFor = `group-count-${index}`;
+
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.id = `group-count-${index}`;
+                input.className = 'group-count-input';
+                input.min = 1;
+                input.value = 1;
+                input.dataset.groupIndex = index; // 关联分组索引
+
+                itemDiv.appendChild(label);
+                itemDiv.appendChild(input);
+                container.appendChild(itemDiv);
+            });
+        }
+
+        // 2. 导入分组菜单逻辑
         document.getElementById('import-btn').addEventListener('click', () => {
             const input = document.getElementById('menu-input').value.trim();
             if (!input) {
-                alert('请输入菜单列表！');
+                alert('请输入分组菜单！');
                 return;
             }
 
-            // 处理输入：分割、去空格、去空项
-            const menuArray = input
-                .split(',')
-                .map(item => item.trim())
-                .filter(item => item.length > 0);
+            try {
+                // 处理输入：分割分组→分割分组名与菜品→清洗数据
+                const groupList = input
+                    .split(';') // 分割为多个分组
+                    .map(item => item.trim())
+                    .filter(item => item) // 过滤空分组
+                    .map(groupStr => {
+                        const [groupName, dishesStr] = groupStr
+                            .split(':') // 分割分组名与菜品
+                            .map(item => item.trim());
+                        
+                        // 验证分组格式（必须有分组名和菜品）
+                        if (!groupName || !dishesStr) {
+                            throw new Error(`分组格式错误：${groupStr}（正确格式：分组名:菜品1,菜品2）`);
+                        }
 
-            if (menuArray.length === 0) {
-                alert('菜单列表不能为空！');
-                return;
+                        // 处理菜品：分割→去空→去重
+                        const dishes = dishesStr
+                            .split(',')
+                            .map(item => item.trim())
+                            .filter(item => item);
+                        
+                        if (dishes.length === 0) {
+                            throw new Error(`分组「${groupName}」无有效菜品！`);
+                        }
+
+                        // 去重（避免用户输入重复菜品）
+                        const uniqueDishes = [...new Set(dishes)];
+                        return { groupName, dishes: uniqueDishes };
+                    });
+
+                // 保存到本地存储
+                localStorage.setItem('groupMenuList', JSON.stringify(groupList));
+                // 渲染分组数量输入框
+                renderGroupCountInputs(groupList);
+                alert(`导入成功！共 ${groupList.length} 个分组，${groupList.reduce((sum, g) => sum + g.dishes.length, 0)} 道菜品`);
+            } catch (err) {
+                alert(err.message);
             }
-
-            // 保存到本地存储
-            localStorage.setItem('menuList', JSON.stringify(menuArray));
-            alert(`导入成功！共 ${menuArray.length} 道菜品`);
         });
 
-        // 3. 随机生成逻辑
+        // 3. 生成随机菜单逻辑
         document.getElementById('generate-btn').addEventListener('click', () => {
-            // 检查本地是否有菜单
-            const savedMenu = localStorage.getItem('menuList');
-            if (!savedMenu) {
-                alert('请先导入菜单！');
+            const savedGroups = localStorage.getItem('groupMenuList');
+            if (!savedGroups) {
+                alert('请先导入分组菜单！');
                 return;
             }
 
-            const menuArray = JSON.parse(savedMenu);
-            const countInput = document.getElementById('count-input');
-            const count = parseInt(countInput.value);
+            const groupList = JSON.parse(savedGroups);
+            const countInputs = document.querySelectorAll('.group-count-input');
 
-            // 验证数量有效性
-            if (isNaN(count) || count < 1) {
-                alert('请输入有效的数量（至少1）！');
-                return;
-            }
-            if (count > menuArray.length) {
-                alert(`数量不能超过菜单总数（当前共 ${menuArray.length} 道）！`);
+            // 验证数量输入框是否与分组匹配
+            if (countInputs.length !== groupList.length) {
+                alert('分组数量输入异常，请重新导入分组！');
                 return;
             }
 
-            // 随机选取不重复项（Fisher-Yates 洗牌算法，更公平的随机）
-            const shuffled = [...menuArray];
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-            const result = shuffled.slice(0, count);
+            try {
+                // 1. 收集并验证每个分组的生成数量
+                const groupParams = groupList.map((group, index) => {
+                    const input = countInputs[index];
+                    const count = parseInt(input.value);
+                    
+                    if (isNaN(count) || count < 1) {
+                        throw new Error(`分组「${group.groupName}」的数量需≥1！`);
+                    }
+                    if (count > group.dishes.length) {
+                        throw new Error(`分组「${group.groupName}」的数量不能超过菜品数（当前${group.dishes.length}道）！`);
+                    }
+                    return { group, count };
+                });
 
-            // 显示结果
-            document.getElementById('result').textContent = result.join('，');
+                // 2. 每个分组独立随机选菜（Fisher-Yates洗牌算法）
+                const result = groupParams.map(({ group, count }) => {
+                    const shuffled = [...group.dishes];
+                    for (let i = shuffled.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                    }
+                    const selected = shuffled.slice(0, count);
+                    return `${group.groupName}：${selected.join('、')}`;
+                });
+
+                // 3. 展示结果
+                document.getElementById('result').textContent = result.join('； ');
+            } catch (err) {
+                alert(err.message);
+            }
         });
     </script>
 </body>
@@ -272,72 +374,143 @@
 
 							<script>
                             	
-        // 1. 页面加载时恢复本地存储的菜单
+        // 页面加载时恢复本地存储的分组数据
         document.addEventListener('DOMContentLoaded', () => {
-            const savedMenu = localStorage.getItem('menuList');
-            if (savedMenu) {
-                const menuArray = JSON.parse(savedMenu);
-                document.getElementById('menu-input').value = menuArray.join(', ');
+            const savedGroups = localStorage.getItem('groupMenuList');
+            if (savedGroups) {
+                const groupList = JSON.parse(savedGroups);
+                // 恢复输入框内容（转换为分组字符串）
+                const inputStr = groupList.map(g => `${g.groupName}:${g.dishes.join(',')}`).join(';');
+                document.getElementById('menu-input').value = inputStr;
+                // 渲染分组数量输入框
+                renderGroupCountInputs(groupList);
             }
         });
 
-        // 2. 导入菜单逻辑
+        // 1. 渲染分组数量输入框（根据导入的分组动态生成）
+        function renderGroupCountInputs(groupList) {
+            const container = document.getElementById('group-counts');
+            container.innerHTML = ''; // 清空原有内容
+            
+            groupList.forEach((group, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'group-count-item';
+
+                const label = document.createElement('label');
+                label.textContent = `${group.groupName}：`;
+                label.htmlFor = `group-count-${index}`;
+
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.id = `group-count-${index}`;
+                input.className = 'group-count-input';
+                input.min = 1;
+                input.value = 1;
+                input.dataset.groupIndex = index; // 关联分组索引
+
+                itemDiv.appendChild(label);
+                itemDiv.appendChild(input);
+                container.appendChild(itemDiv);
+            });
+        }
+
+        // 2. 导入分组菜单逻辑
         document.getElementById('import-btn').addEventListener('click', () => {
             const input = document.getElementById('menu-input').value.trim();
             if (!input) {
-                alert('请输入菜单列表！');
+                alert('请输入分组菜单！');
                 return;
             }
 
-            // 处理输入：分割、去空格、去空项
-            const menuArray = input
-                .split(',')
-                .map(item => item.trim())
-                .filter(item => item.length > 0);
+            try {
+                // 处理输入：分割分组→分割分组名与菜品→清洗数据
+                const groupList = input
+                    .split(';') // 分割为多个分组
+                    .map(item => item.trim())
+                    .filter(item => item) // 过滤空分组
+                    .map(groupStr => {
+                        const [groupName, dishesStr] = groupStr
+                            .split(':') // 分割分组名与菜品
+                            .map(item => item.trim());
+                        
+                        // 验证分组格式（必须有分组名和菜品）
+                        if (!groupName || !dishesStr) {
+                            throw new Error(`分组格式错误：${groupStr}（正确格式：分组名:菜品1,菜品2）`);
+                        }
 
-            if (menuArray.length === 0) {
-                alert('菜单列表不能为空！');
-                return;
+                        // 处理菜品：分割→去空→去重
+                        const dishes = dishesStr
+                            .split(',')
+                            .map(item => item.trim())
+                            .filter(item => item);
+                        
+                        if (dishes.length === 0) {
+                            throw new Error(`分组「${groupName}」无有效菜品！`);
+                        }
+
+                        // 去重（避免用户输入重复菜品）
+                        const uniqueDishes = [...new Set(dishes)];
+                        return { groupName, dishes: uniqueDishes };
+                    });
+
+                // 保存到本地存储
+                localStorage.setItem('groupMenuList', JSON.stringify(groupList));
+                // 渲染分组数量输入框
+                renderGroupCountInputs(groupList);
+                alert(`导入成功！共 ${groupList.length} 个分组，${groupList.reduce((sum, g) => sum + g.dishes.length, 0)} 道菜品`);
+            } catch (err) {
+                alert(err.message);
             }
-
-            // 保存到本地存储
-            localStorage.setItem('menuList', JSON.stringify(menuArray));
-            alert(`导入成功！共 ${menuArray.length} 道菜品`);
         });
 
-        // 3. 随机生成逻辑
+        // 3. 生成随机菜单逻辑
         document.getElementById('generate-btn').addEventListener('click', () => {
-            // 检查本地是否有菜单
-            const savedMenu = localStorage.getItem('menuList');
-            if (!savedMenu) {
-                alert('请先导入菜单！');
+            const savedGroups = localStorage.getItem('groupMenuList');
+            if (!savedGroups) {
+                alert('请先导入分组菜单！');
                 return;
             }
 
-            const menuArray = JSON.parse(savedMenu);
-            const countInput = document.getElementById('count-input');
-            const count = parseInt(countInput.value);
+            const groupList = JSON.parse(savedGroups);
+            const countInputs = document.querySelectorAll('.group-count-input');
 
-            // 验证数量有效性
-            if (isNaN(count) || count < 1) {
-                alert('请输入有效的数量（至少1）！');
-                return;
-            }
-            if (count > menuArray.length) {
-                alert(`数量不能超过菜单总数（当前共 ${menuArray.length} 道）！`);
+            // 验证数量输入框是否与分组匹配
+            if (countInputs.length !== groupList.length) {
+                alert('分组数量输入异常，请重新导入分组！');
                 return;
             }
 
-            // 随机选取不重复项（Fisher-Yates 洗牌算法，更公平的随机）
-            const shuffled = [...menuArray];
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-            const result = shuffled.slice(0, count);
+            try {
+                // 1. 收集并验证每个分组的生成数量
+                const groupParams = groupList.map((group, index) => {
+                    const input = countInputs[index];
+                    const count = parseInt(input.value);
+                    
+                    if (isNaN(count) || count < 1) {
+                        throw new Error(`分组「${group.groupName}」的数量需≥1！`);
+                    }
+                    if (count > group.dishes.length) {
+                        throw new Error(`分组「${group.groupName}」的数量不能超过菜品数（当前${group.dishes.length}道）！`);
+                    }
+                    return { group, count };
+                });
 
-            // 显示结果
-            document.getElementById('result').textContent = result.join('，');
+                // 2. 每个分组独立随机选菜（Fisher-Yates洗牌算法）
+                const result = groupParams.map(({ group, count }) => {
+                    const shuffled = [...group.dishes];
+                    for (let i = shuffled.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                    }
+                    const selected = shuffled.slice(0, count);
+                    return `${group.groupName}：${selected.join('、')}`;
+                });
+
+                // 3. 展示结果
+                document.getElementById('result').textContent = result.join('； ');
+            } catch (err) {
+                alert(err.message);
+            }
         });
     
 
