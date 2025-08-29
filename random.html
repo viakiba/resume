@@ -1,0 +1,347 @@
+
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+							<style>
+								body {
+									background-color: white; /* Ensure the iframe has a white background */
+								}
+
+								
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "微软雅黑", sans-serif;
+        }
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .input-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        textarea, input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+            resize: vertical;
+        }
+        textarea {
+            height: 120px;
+        }
+        button {
+            background-color: #2563eb;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1d4ed8;
+        }
+        .result-box {
+            margin-top: 25px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #f8fafc;
+        }
+        .result-box h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        #result {
+            font-size: 18px;
+            color: #2d3748;
+            line-height: 1.8;
+            min-height: 40px;
+        }
+        .tip {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+    
+
+							</style>
+                        </head>
+                        <body>
+                            <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>菜单随机生成器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "微软雅黑", sans-serif;
+        }
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .input-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        textarea, input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+            resize: vertical;
+        }
+        textarea {
+            height: 120px;
+        }
+        button {
+            background-color: #2563eb;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1d4ed8;
+        }
+        .result-box {
+            margin-top: 25px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #f8fafc;
+        }
+        .result-box h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        #result {
+            font-size: 18px;
+            color: #2d3748;
+            line-height: 1.8;
+            min-height: 40px;
+        }
+        .tip {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>菜单随机生成器</h1>
+
+        <!-- 菜单输入区域 -->
+        <div class="input-group">
+            <label for="menu-input">菜单列表（用逗号分隔）：</label>
+            <textarea id="menu-input" placeholder="例如：西红柿炒鸡蛋,拍黄瓜,鱼香肉丝"></textarea>
+            <div class="tip">提示：支持多行输入，自动过滤空项和空格</div>
+        </div>
+        <button id="import-btn">导入菜单</button>
+
+        <!-- 数量选择区域 -->
+        <div class="input-group" style="margin-top: 20px;">
+            <label for="count-input">生成数量：</label>
+            <input type="number" id="count-input" min="1" value="1" style="width: 100px;">
+        </div>
+        <button id="generate-btn">生成随机菜单</button>
+
+        <!-- 结果显示区域 -->
+        <div class="result-box">
+            <h2>随机结果：</h2>
+            <div id="result">请先导入菜单并生成</div>
+        </div>
+    </div>
+
+    <script>
+        // 1. 页面加载时恢复本地存储的菜单
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedMenu = localStorage.getItem('menuList');
+            if (savedMenu) {
+                const menuArray = JSON.parse(savedMenu);
+                document.getElementById('menu-input').value = menuArray.join(', ');
+            }
+        });
+
+        // 2. 导入菜单逻辑
+        document.getElementById('import-btn').addEventListener('click', () => {
+            const input = document.getElementById('menu-input').value.trim();
+            if (!input) {
+                alert('请输入菜单列表！');
+                return;
+            }
+
+            // 处理输入：分割、去空格、去空项
+            const menuArray = input
+                .split(',')
+                .map(item => item.trim())
+                .filter(item => item.length > 0);
+
+            if (menuArray.length === 0) {
+                alert('菜单列表不能为空！');
+                return;
+            }
+
+            // 保存到本地存储
+            localStorage.setItem('menuList', JSON.stringify(menuArray));
+            alert(`导入成功！共 ${menuArray.length} 道菜品`);
+        });
+
+        // 3. 随机生成逻辑
+        document.getElementById('generate-btn').addEventListener('click', () => {
+            // 检查本地是否有菜单
+            const savedMenu = localStorage.getItem('menuList');
+            if (!savedMenu) {
+                alert('请先导入菜单！');
+                return;
+            }
+
+            const menuArray = JSON.parse(savedMenu);
+            const countInput = document.getElementById('count-input');
+            const count = parseInt(countInput.value);
+
+            // 验证数量有效性
+            if (isNaN(count) || count < 1) {
+                alert('请输入有效的数量（至少1）！');
+                return;
+            }
+            if (count > menuArray.length) {
+                alert(`数量不能超过菜单总数（当前共 ${menuArray.length} 道）！`);
+                return;
+            }
+
+            // 随机选取不重复项（Fisher-Yates 洗牌算法，更公平的随机）
+            const shuffled = [...menuArray];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            const result = shuffled.slice(0, count);
+
+            // 显示结果
+            document.getElementById('result').textContent = result.join('，');
+        });
+    </script>
+</body>
+</html>
+
+
+
+							<script>
+                            	
+        // 1. 页面加载时恢复本地存储的菜单
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedMenu = localStorage.getItem('menuList');
+            if (savedMenu) {
+                const menuArray = JSON.parse(savedMenu);
+                document.getElementById('menu-input').value = menuArray.join(', ');
+            }
+        });
+
+        // 2. 导入菜单逻辑
+        document.getElementById('import-btn').addEventListener('click', () => {
+            const input = document.getElementById('menu-input').value.trim();
+            if (!input) {
+                alert('请输入菜单列表！');
+                return;
+            }
+
+            // 处理输入：分割、去空格、去空项
+            const menuArray = input
+                .split(',')
+                .map(item => item.trim())
+                .filter(item => item.length > 0);
+
+            if (menuArray.length === 0) {
+                alert('菜单列表不能为空！');
+                return;
+            }
+
+            // 保存到本地存储
+            localStorage.setItem('menuList', JSON.stringify(menuArray));
+            alert(`导入成功！共 ${menuArray.length} 道菜品`);
+        });
+
+        // 3. 随机生成逻辑
+        document.getElementById('generate-btn').addEventListener('click', () => {
+            // 检查本地是否有菜单
+            const savedMenu = localStorage.getItem('menuList');
+            if (!savedMenu) {
+                alert('请先导入菜单！');
+                return;
+            }
+
+            const menuArray = JSON.parse(savedMenu);
+            const countInput = document.getElementById('count-input');
+            const count = parseInt(countInput.value);
+
+            // 验证数量有效性
+            if (isNaN(count) || count < 1) {
+                alert('请输入有效的数量（至少1）！');
+                return;
+            }
+            if (count > menuArray.length) {
+                alert(`数量不能超过菜单总数（当前共 ${menuArray.length} 道）！`);
+                return;
+            }
+
+            // 随机选取不重复项（Fisher-Yates 洗牌算法，更公平的随机）
+            const shuffled = [...menuArray];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            const result = shuffled.slice(0, count);
+
+            // 显示结果
+            document.getElementById('result').textContent = result.join('，');
+        });
+    
+
+							</script>
+                        </body>
+                        </html>
+                    
