@@ -258,7 +258,7 @@
                 input.type = 'number';
                 input.id = `group-count-${index}`;
                 input.className = 'group-count-input';
-                input.min = 1;
+                input.min = 0;
                 input.value = 1;
                 input.dataset.groupIndex = index; // 关联分组索引
 
@@ -341,7 +341,7 @@
                     const count = parseInt(input.value);
                     
                     if (isNaN(count) || count < 1) {
-                        throw new Error(`分组「${group.groupName}」的数量需≥1！`);
+                        // throw new Error(`分组「${group.groupName}」的数量需≥1！`);
                     }
                     if (count > group.dishes.length) {
                         throw new Error(`分组「${group.groupName}」的数量不能超过菜品数（当前${group.dishes.length}道）！`);
@@ -352,6 +352,9 @@
                 // 2. 每个分组独立随机选菜（Fisher-Yates洗牌算法）
                 const result = groupParams.map(({ group, count }) => {
                     const shuffled = [...group.dishes];
+					if (count<1){
+						return ``;
+					}
                     for (let i = shuffled.length - 1; i > 0; i--) {
                         const j = Math.floor(Math.random() * (i + 1));
                         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
