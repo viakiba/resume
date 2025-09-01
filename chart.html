@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="description" content="Visualize OpenRouter CSV usage costs by model and over time. Runs fully in your browser." />
+	<meta name="theme-color" content="#0f1216" />
+	<meta property="og:title" content="OpenRouter Costs Visualizer" />
+	<meta property="og:description" content="Drop CSVs to analyze costs by model and over time. 100% local." />
+	<meta property="og:type" content="website" />
+	<meta property="og:image" content="./assets/counting-money.png" />
+	<meta property="twitter:card" content="summary" />
+	<title>OpenRouter Costs Visualizer</title>
+	<link rel="icon" type="image/png" href="./assets/counting-money.png">
+	<link href="https://fonts.googleapis.com/css?family=Montserrat|Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+	<link rel="stylesheet" href="./css/tokens.css" />
+	<link rel="stylesheet" href="./css/base.css" />
+	<link rel="stylesheet" href="./css/layout.css" />
+	<link rel="stylesheet" href="./css/components.css" />
+	<link rel="stylesheet" href="./css/table.css" />
+	<!-- Charts -->
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+	<script type="module" src="./js/main.js"></script>
+</head>
+<body>
+	<header class="topbar">
+		<div class="brand">OpenRouter Costs Visualizer</div>
+
+		<div class="controls">
+			<div class="control">
+				<div class="file-control-layout">
+					<div id="filesList" class="files-list-compact" hidden>
+						<div class="files-list-header">
+							<span class="files-count">0 files</span>
+							<span id="uniqueRecords" class="unique-records">0 unique records</span>
+							<button id="clearAllFiles" class="btn mini">Clear</button>
+						</div>
+					</div>
+					<div id="dropZone" class="drop-zone">
+						<div class="drop-zone-content">
+							<div class="drop-zone-icon">📁</div>
+							<div class="drop-zone-text">
+								<div>Drop CSV files here</div>
+								<div class="drop-zone-subtext">or click to browse</div>
+							</div>
+						</div>
+						<input id="csvFile" type="file" accept=".csv" multiple hidden />
+					</div>
+				</div>
+				<!-- Files container is now separate and will appear as a floating panel -->
+				<div id="filesContainer" class="files-container-panel" hidden></div>
+			</div>
+
+			<div class="divider"></div>
+
+			<div class="date-row">
+				<label class="control">
+					<span>From</span>
+					<input id="fromDate" type="date" />
+				</label>
+
+				<label class="control">
+					<span>To</span>
+					<input id="toDate" type="date" />
+				</label>
+			</div>
+
+			<div class="button-row">
+				<button id="applyFilters" class="btn primary" type="button">Apply</button>
+				<button id="resetFilters" class="btn" type="button">Reset</button>
+			</div>
+
+			<div class="divider"></div>
+
+			<div class="control model-filter">
+				<span>Filter models</span>
+				<button id="modelFilterBtn" class="btn" type="button">All models</button>
+				<div id="modelFilterPanel" class="model-panel" hidden>
+					<div class="model-panel-head">
+						<input id="modelSearch" type="text" placeholder="Search models..." />
+						<div class="spacer"></div>
+						<button id="modelSelectAll" class="btn mini" type="button">All</button>
+						<button id="modelSelectNone" class="btn mini" type="button">None</button>
+					</div>
+					<div class="model-list" id="modelList"></div>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<main class="layout">
+		<section class="columns">
+			<div class="left-col">
+				<section class="left-panel">
+					<div class="table-header">
+						<h2>Costs</h2>
+						<div class="control col-filter model-filter">
+							<button id="colFilterBtn" class="btn" type="button">Columns Filter</button>
+							<div id="colFilterPanel" class="model-panel" hidden>
+								<div class="model-panel-head">
+									<div class="spacer"></div>
+									<button id="colSelectAll" class="btn mini" type="button">All</button>
+									<button id="colSelectNone" class="btn mini" type="button">None</button>
+								</div>
+								<div class="model-list" id="colList"></div>
+							</div>
+						</div>
+					</div>
+					<div class="table-wrap">
+						<table id="costTable">
+							<thead>
+								<tr>
+									<th data-col="model">Model</th>
+									<th data-col="req" class="sortable-header">Requests <span class="sort-icon"></span></th>
+									<th data-col="total" class="sortable-header">OpenRouter Cost <span class="sort-icon"></span></th>
+									<th data-col="byok" class="sortable-header" data-tooltip="Bring Your Own Key costs are charged directly by the model provider when you use your own API key.">BYOK <span class="sort-icon"></span></th>
+									<th data-col="web" class="sortable-header">Web Search <span class="sort-icon"></span></th>
+									<th data-col="cache" class="sortable-header">Cache <span class="sort-icon"></span></th>
+									<th data-col="file" class="sortable-header">File Processing <span class="sort-icon"></span></th>
+									<th data-col="tp" class="sortable-header">Tokens Prompt <span class="sort-icon"></span></th>
+									<th data-col="avgTp" class="sortable-header">Avg Tokens Prompt <span class="sort-icon"></span></th>
+									<th data-col="tokenOutput" class="sortable-header">Token Output <span class="sort-icon"></span></th>
+									<th data-col="avgTokenOutput" class="sortable-header">Avg Token Output <span class="sort-icon"></span></th>
+									<th data-col="tr" class="sortable-header">Tokens Reasoning <span class="sort-icon"></span></th>
+									<th data-col="avgTr" class="sortable-header">Avg Tokens Reasoning <span class="sort-icon"></span></th>
+									<th data-col="tc" class="sortable-header" data-tooltip="Completion Tokens comprehend both Reasoning Tokens and Output Tokens.">Tokens Completion <span class="sort-icon"></span></th>
+									<th data-col="genTime" class="sortable-header" data-tooltip="Average generation time per request (ms).">Avg Gen Time <span class="sort-icon"></span></th>
+									<th data-col="ttft" class="sortable-header" data-tooltip="Average time to first token per request (ms).">Avg TTFT <span class="sort-icon"></span></th>
+								</tr>
+							</thead>
+							<tbody>
+								<!-- Filled dynamically -->
+							</tbody>
+							<tfoot>
+								<!-- Totals row filled dynamically -->
+							</tfoot>
+						</table>
+					</div>
+				</section>
+
+				<div class="left-bottom">
+					<div class="card">
+						<h3>Cost by Model</h3>
+						<canvas id="barCostByModel"></canvas>
+					</div>
+
+					<div class="card">
+						<h3>Cost Over Time</h3>
+						<canvas id="lineCostOverTime"></canvas>
+					</div>
+				</div>
+			</div>
+
+			<div class="right-col">
+				<section class="right-panel">
+					<div class="kpis">
+						<div class="kpi"><div class="kpi-title">Requests</div><div class="kpi-value" id="kpiRequests">-</div></div>
+						<div class="kpi"><div class="kpi-title">Total OpenRouter Cost</div><div class="kpi-value" id="kpiOpenRouterCost">-</div></div>
+						<div class="kpi"><div class="kpi-title">Total Cost</div><div class="kpi-value" id="kpiTotalCost">-</div></div>
+						<div class="kpi"><div class="kpi-title">Avg Cost / Req</div><div class="kpi-value" id="kpiAvgCost">-</div></div>
+						<div class="kpi"><div class="kpi-title">Time Window</div><div class="kpi-value" id="kpiWindow">-</div></div>
+					</div>
+				</section>
+
+				<!-- Privacy notice card -->
+				<div class="card privacy-card">
+					<div class="privacy-content">
+						Your files are never stored or sent anywhere.<br>
+						Processing happens only in your browser.<br>
+						Your column visibility settings are saved locally.
+					</div>
+				</div>
+
+				<!-- Replace notes-card with about-me panel -->
+				<div class="card about-me-card">
+					<div class="about-me-content">
+						<div>
+							made with ❤️ by 
+							<a href="https://github.com/lorenzozane" target="_blank" class="about-link mono">@lorenzozane</a>
+						</div>
+						<div style="margin-top:8px;">
+							<a href="https://github.com/lorenzozane" target="_blank" class="about-link"><span class="mono">github</span></a>
+							<span> | </span>
+							<a href="https://linkedin.com/in/lorenzozane/" target="_blank" class="about-link"><span class="mono">linkedin</span></a>
+						</div>
+						<div style="margin-top:8px; font-size: x-small;">
+							if you want to support, consider
+							<a href="https://buymeacoffee.com/lorenzozane" target="_blank" class="about-link"><span class="mono">buymeacoffee</span></a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<!-- Tooltip container -->
+	<div id="tableTooltip" class="table-tooltip" style="display:none;"></div>
+</body>
+</html>
