@@ -364,7 +364,8 @@
                 });
 
                 // 3. 展示结果
-                document.getElementById('result').textContent = result.join('； ');
+				const filteredResult = result.filter(item => item.trim() !== '');
+                document.getElementById('result').textContent = filteredResult.join('； ');
             } catch (err) {
                 alert(err.message);
             }
