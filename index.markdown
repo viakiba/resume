@@ -5,15 +5,10 @@ headertitle: Resume
 <center>
     <h1>黄鹏</h1>
     <div>
-        <span>
             <img src="./image/assets/phone-solid.svg" width="18px">
             <a href="tel:18037650338">18037650338</a>
-        </span>
-      .
-        <span>
             <img src="./image/assets/envelope-solid.svg" width="18px">
             <a href="mailto:892645423@qq.com">892645423@qq.com</a>
-        </span>
     </div>
     <div>
         <span>
@@ -59,12 +54,6 @@ headertitle: Resume
 
 ## <img src="./image/assets/project-diagram-solid.svg" width="22px"> 项目经历
 
-- **元点互动·Dark War (手游, 海外SLG, 2026.1~2026.9)**
-    * 负责伊甸园赛季服多阵营联盟城战玩法的服务端设计与实现：绿洲、金字塔、祭坛、关卡的占领与连地校验、宣战机制、赛季积分体系等功能开发
-    * 负责游戏内贸易战玩法、神庙玩法、圣器技能、主题活动、移民系统、大R建联、联盟成就等功能开发
-    * 推动 AI 能力在项目中的落地：游戏聊天审核由敏感词匹配升级为大模型语义识别，有效拦截变体广告词与违规拉人；代码提交流程接入 AI 自动审查，在合入后拦截潜在缺陷与规范问题。
-    * Java / SmartFoxServer / MyBatis / Protobuf / MySQL / Redis / RocketMQ
-
 - **元点互动·Build Master (手游, 海外SLG, 2023.11~2026.1)**
     * 作为唯一后端负责人，负责开发与日常维护，独立支撑 6 个赛季的版本迭代
     * 主导玩法与赛季框架重构：抽象玩法类型层，为活动、商店、跨服等 10+ 模块统一接入赛季隔离能力
@@ -73,12 +62,18 @@ headertitle: Resume
     * 负责商业/赛季活动的系统开发与迭代：转盘、数字寻宝、S11 Boss、大富翁、西瓜转盘、温泉关、送花等30+活动
     * Java / SmartFoxServer / MyBatis / Protobuf / MySQL / Redis / RocketMQ
 
+- **元点互动·Dark War (手游, 海外SLG, 2026.1~2026.9)**
+    * 负责伊甸园赛季服多阵营联盟城战玩法的服务端设计与实现：绿洲、金字塔、祭坛、关卡的占领与连地校验、宣战机制、赛季积分体系等功能开发
+    * 负责游戏内贸易战玩法、神庙玩法、圣器技能、主题活动、移民系统、大R建联、联盟成就等功能开发
+    * 推动 AI 能力在项目中的落地：游戏聊天审核由敏感词匹配升级为大模型语义识别，有效拦截变体广告词与违规拉人；代码提交流程接入 AI 自动审查，在合入后拦截潜在缺陷与规范问题。
+    * Java / SmartFoxServer / MyBatis / Protobuf / MySQL / Redis / RocketMQ
+
 - **Topjoy·Empires Calling (手游, SLG, 试运营)**
     * 50 人左右的项目规模，后端 4 人
     * 采用 Java 与 自有框架 进行功能实现与开发，以及 游戏周边工具 相关开发
     * 大小王战、世界行军、攻击方式、支付、礼包、订阅、排行、运营活动、世界PVE等功能开发工作
 
-- **点点互动·Mafia Esper (手游, 卡牌/动作, 未上线)[Youtube实机视频](https://www.youtube.com/watch?v=IZ2gpIIh2n0)**
+- **点点互动·Mafia Esper (手游, 卡牌/动作, 未上线)**
     * 40 人左右的项目规模，后端 3 人
     * 主力开发，采用 Go 与[自有框架](https://github.com/sandwich-go)进行架构设计与具体实现
     * 主要有: 登录服务, 网关服务, 逻辑服务, 共斗(匹配), CDK/支付, 帧同步服务
