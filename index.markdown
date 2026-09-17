@@ -24,7 +24,7 @@ headertitle: Resume
         </span>
         ·
         <span>
-          求职意向：资深后端开发 / 后端主程
+          求职意向：Java
         </span>
     </div>
 </center>
@@ -35,7 +35,7 @@ headertitle: Resume
 
 ## <img src="./image/assets/briefcase-solid.svg" width="22px"> 工作经历
 
-- 元点互动-APS(后端负责人)/Dark(服务器开发),Java，2023.11~2026.9
+- 元点互动-Build Master(后端负责人)/Dark(服务器开发),Java，2023.11~2026.9
 - Topjoy攸乐·Ace(服务器开发)，Java，2022.11~2023.11
 - 点点互动·Persona(服务器开发)，Golang，2021.11~2022.11
 - 字节跳动·Ohayoo(服务器开发)，Java，2020.12~2021.11
@@ -46,7 +46,7 @@ headertitle: Resume
 ## <img src="./image/assets/tools-solid.svg" width="22px"> 技能清单
 - 多次担任后端负责人，独立负责技术选型、架构设计与版本交付
 - 具备从 0 到 1 构建游戏服务器框架的完整经验：网络通信、事件调度、配置导表、持久化、热更新等基础模块均有实际落地
-- 擅长 Java ，熟悉 Golang，了解 Python, Shell 等脚本语言
+- 擅长 Java ，了解 Golang， Python, Shell 等脚本语言
 - 精通网络 IO 框架 Mina/Netty，掌握热更技术与常见 RPC 框架（GRPC）
 - 熟知 Mysql, Redis, MongoDB的使用与调优，熟悉 MyBatis 等 ORM 框架
 - 熟悉 Protobuf 协议序列化
@@ -65,7 +65,6 @@ headertitle: Resume
 - **元点互动·Dark War (手游, 海外SLG, 2026.1~2026.9)**
     * 负责伊甸园赛季服多阵营联盟城战玩法的服务端设计与实现：绿洲、金字塔、祭坛、关卡的占领与连地校验、宣战机制、赛季积分体系等功能开发
     * 负责游戏内贸易战玩法、神庙玩法、圣器技能、主题活动、移民系统、大R建联、联盟成就等功能开发
-    * 推动 AI 能力在项目中的落地：游戏聊天审核由敏感词匹配升级为大模型语义识别，有效拦截变体广告词与违规拉人；代码提交流程接入 AI 自动审查，在合入后拦截潜在缺陷与规范问题。
     * Java / SmartFoxServer / MyBatis / Protobuf / MySQL / Redis / RocketMQ
 
 - **Topjoy·Empires Calling (手游, SLG, 试运营)**
